@@ -1,2 +1,5 @@
 .DS_Store
 *.pyc
+web
+feedparser.py
+sgmllib3.py
