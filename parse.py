@@ -4,6 +4,7 @@
 # Now runs on GAE, using web.py rather than webapp2 (so it can easily be run elsewhere)
 
 from google.appengine.ext.webapp.util import run_wsgi_app
+import logging
 import web
 import json
 import feedparser
@@ -20,13 +21,15 @@ app = web.application(urls, globals())
 
 class Parser:
   def GET(self):
+    url = ''
     web.header('Content-Type', 'application/json')
     try:
       url = web.input().url
       return json.dumps(feedparser.parse(url), default=to_json)
     except Exception as e:
+      logging.error("There was an error when attempting to parse feed at url: %s", url)
       web.ctx.status = "400 Bad Request"
-      return json.dumps({"message": "Sorry, i couldn't parse that feed. Usage: /?url=http://example.com/feed"})
+      return json.dumps({"message": "Sorry, i couldn't parse feed at url: %s. Usage: /?url=http://example.com/feed" % url})
 
 if __name__ == "__main__":
   application = app.wsgifunc()
